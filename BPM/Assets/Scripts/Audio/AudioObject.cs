@@ -1,18 +1,18 @@
 using System;
 using UnityEngine;
 
-namespace  Audio
+namespace Audio
 {
     public class AudioObject : MonoBehaviour, IDisposable
     {
         public AudioSource audioSource;
-        public bool isPlaying; 
+        public bool isPlaying;
 
-        public void PlayScheduled(AudioClip clip,double time)
+        public void PlayScheduled(AudioClip clip, double time)
         {
-            audioSource.clip = clip; 
+            audioSource.clip = clip;
             audioSource.PlayScheduled(time);
-            Invoke("OnSoundEnd", audioSource.clip.length + 1); 
+            Invoke("OnSoundEnd", audioSource.clip.length + 1);
         }
 
         public void Play()
@@ -33,7 +33,7 @@ namespace  Audio
 
         void OnSoundEnd()
         {
-            isPlaying = false; 
+            isPlaying = false;
             Dispose();
         }
 

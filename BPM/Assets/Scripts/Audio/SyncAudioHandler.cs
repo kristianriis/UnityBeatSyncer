@@ -8,29 +8,29 @@ namespace Audio
         private AudioObject curActiveAudioObject;
         private double nextBeatTime;
         private int beatCount = 0;
-        private int barCount = 0; 
-        
+        private int barCount = 0;
+
         //Set your bpm here man 
-        private float mainBpm = 140; 
-        
+        private float mainBpm = 140;
+
         private void Start()
         {
-            audioMapping = AudioManager.Instance.audioMapping;    
+            audioMapping = AudioManager.Instance.audioMapping;
             double beatInterval = 60d / mainBpm / 2;
             nextBeatTime = AudioSettings.dspTime + 2; //prep time for PlayScheduled
-            StartNextSound(AudioType.Test4,0);
+            StartNextSound(AudioType.Test4, 0);
         }
-        
+
         private void Update()
         {
             double dspTime = AudioSettings.dspTime;
+            double lookahead = 0.2; // schedule 200ms for framerate
 
-            if (dspTime >= nextBeatTime - 0.01f)
+            while (nextBeatTime < dspTime + lookahead)
             {
-                TriggerSound();
-
-                double beatInterval = 60d / mainBpm / 2; //8ths notes atm, you can change that 
-                nextBeatTime += beatInterval; 
+                TriggerSound(); 
+                double beatInterval = 60d / mainBpm / 2;
+                nextBeatTime += beatInterval;
             }
         }
 
@@ -85,21 +85,23 @@ namespace Audio
             if (audioObject == null)
             {
                 Debug.LogWarning($"AudioSystem: audioobject not loaded");
-                return;    
+                return;
             }
-            
+
             //don't that here - but then again you're hackerman 
             audioObject.audioSource.outputAudioMixerGroup = audioInfo.audioMixerGroup;
             audioObject.audioSource.volume = audioInfo.volume;
             audioObject.isPlaying = true;
             audioObject.PlayScheduled(audioInfo.audioClip, scheduledTime);
         }
-        
+
         //could use this for calculating music beats if you do full tracks 
         private double CalculateTimeToNextBeat(float bpm)
         {
             double barDuration = 60d / bpm * 4;
-            double remainder = ((double)curActiveAudioObject.audioSource.timeSamples / curActiveAudioObject.audioSource.clip.frequency) % (barDuration);
+            double remainder =
+                ((double)curActiveAudioObject.audioSource.timeSamples /
+                 curActiveAudioObject.audioSource.clip.frequency) % (barDuration);
             double nextBarTime = AudioSettings.dspTime + barDuration - remainder;
             return nextBarTime;
         }

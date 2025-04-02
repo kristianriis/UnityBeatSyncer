@@ -5,30 +5,31 @@ namespace Audio
 {
     public class AudioManager : MonoBehaviour
     {
-        public AudioMapping audioMapping; 
+        public AudioMapping audioMapping;
         public AudioObject audioObject;
         private List<AudioObject> audioObjectPool = new List<AudioObject>();
         private GameObject audioObjectPoolRoot;
         private SyncAudioHandler syncAudioHandler; //could trigger it all from here
-        
+
         public static AudioManager Instance { get; private set; }
-    
+
         //making you a singleton - you could do DI or whatever
         //Also you could do an interface for actually triggering sounds from here instead of the indiviudal handlers 
         private void Awake()
         {
             if (Instance != null && Instance != this)
             {
-                Destroy(gameObject); 
+                Destroy(gameObject);
                 return;
             }
+
             Instance = this;
             DontDestroyOnLoad(gameObject);
-        
+
             audioObjectPoolRoot = new GameObject("AudioObjectPool");
             CreateAudioObjectPool();
         }
-    
+
         private void CreateAudioObjectPool()
         {
             for (int i = 0; i < 20; i++)
@@ -45,11 +46,11 @@ namespace Audio
                 if (obj.isPlaying == false)
                 {
                     obj.gameObject.SetActive(true);
-                    return obj; 
+                    return obj;
                 }
             }
 
-            return null; 
+            return null;
         }
     }
 }
